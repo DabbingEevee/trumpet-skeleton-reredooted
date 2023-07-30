@@ -44,8 +44,8 @@ public class TrumpetSkeletonMob extends Skeleton {
 	protected void populateDefaultEquipmentSlots(RandomSource pRandom, DifficultyInstance pDifficulty) {
 		super.populateDefaultEquipmentSlots(pRandom, pDifficulty);
 		this.startUsingItem(InteractionHand.MAIN_HAND);
-		//setActiveHand(Hand.MAIN_HAND);
-		setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.TRUMPET_ITEM.get()));
+		this.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.TRUMPET_ITEM.get()));
+		
 	}
 
 	@Override

@@ -1,4 +1,7 @@
 {
+  "enchantment.trumpetskeleton.deafening": "Deafening",
+  "enchantment.trumpetskeleton.deafening.desc": "Causes trumpets to deal a small amount of damage.",
+
   "entity.trumpetskeleton.trumpet_skeleton": "Trumpet Skeleton",
 
   "subtitles.entity.trumpetskeleton.trumpet_skeleton.ambient": "Skeleton doots",

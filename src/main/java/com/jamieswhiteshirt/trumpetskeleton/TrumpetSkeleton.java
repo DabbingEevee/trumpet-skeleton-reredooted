@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.existingeevee.trumpetextras.enchants.ModEnchantments;
 import com.jamieswhiteshirt.trumpetskeleton.register.Entities;
 import com.jamieswhiteshirt.trumpetskeleton.register.Items;
 import com.jamieswhiteshirt.trumpetskeleton.register.SoundEvents;
@@ -43,6 +44,10 @@ public class TrumpetSkeleton {
 		SoundEvents.REGISTER.register(eventBus);
 		
 		TrumpetSkeletonSpawningModifier.BIOME_MODIFIER_SERIALIZERS.register(eventBus);
+		
+		//ExistingEevee start
+		ModEnchantments.REGISTER.register(eventBus);
+		//ExistingEevee end
 		
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.CONFIG);
 	}
@@ -87,8 +92,8 @@ public class TrumpetSkeleton {
 			if (relativeWeight <= 0) {
 				LOGGER.info("Trumpet skeletons have been configured not to spawn; not registering spawn entries.");
 			}
-
-			//SpawnPlacements.register(Entities.TRUMPET_SKELETON_ENTITY.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, TrumpetSkeletonMob::checkMonsterSpawnRules);
+			
+			//Note, this has been moved into json. See TrumpetSkeletonSpawningModifier
 		});
 	}
 }

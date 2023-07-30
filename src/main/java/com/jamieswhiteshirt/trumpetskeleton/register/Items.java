@@ -15,8 +15,6 @@ public class Items {
 
 	public static final RegistryObject<Item> TRUMPET_ITEM = REGISTER.register("trumpet", () -> new TrumpetItem(new Item.Properties().tab(CreativeModeTab.TAB_MISC).durability(200)));
 
-    
-
 	public static final RegistryObject<Item> TRUMPET_SKELETON_SPAWN_EGG = REGISTER.register(
 			"trumpet_skeleton_spawn_egg",
 
