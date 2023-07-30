@@ -1,53 +1,57 @@
 package com.jamieswhiteshirt.trumpetskeleton.items;
 
-import com.jamieswhiteshirt.trumpetskeleton.register.SoundEvents;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.world.World;
-
 import java.util.List;
+
+import com.jamieswhiteshirt.trumpetskeleton.register.SoundEvents;
+
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
 
 public class TrumpetItem extends Item {
     public TrumpetItem(Properties properties) {
         super(properties);
     }
 
-    public static void scare(World world, LivingEntity user) {
-        if (!world.isRemote) {
-            List<LivingEntity> spooked = world.getEntitiesWithinAABB(
+    public static void scare(Level world, LivingEntity user) {
+        if (!world.isClientSide) {
+            List<LivingEntity> spooked = world.getEntitiesOfClass(
                     LivingEntity.class,
-                    user.getBoundingBox().grow(10.0)
+                    user.getBoundingBox().inflate(10.0)
             );
 
             for (LivingEntity entity : spooked) {
                 if (entity == user) continue;
 
-                double deltaX = entity.getPosX() - user.getPosX() + world.rand.nextDouble() - world.rand.nextDouble();
-                double deltaZ = entity.getPosZ() - user.getPosZ() + world.rand.nextDouble() - world.rand.nextDouble();
+                double deltaX = entity.position().x - user.position().x + world.random.nextDouble() - world.random.nextDouble();
+                double deltaZ = entity.position().z - user.position().z + world.random.nextDouble() - world.random.nextDouble();
 
                 double distance = Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ));
 
-                entity.velocityChanged = true;
-                entity.setRevengeTarget(user);
+                entity.hurtMarked = true;
+                entity.setLastHurtByMob(user);
 
-                entity.addVelocity(
+                entity.lerpMotion(deltaX, deltaZ, distance);
+                                               
+                entity.setDeltaMovement(
                         0.5 * deltaX / distance,
                         5 / (10 + distance),
                         0.5 + deltaZ / distance
                 );
+                
             }
         }
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.DRINK;
+    public UseAnim getUseAnimation(ItemStack pStack) {
+        return UseAnim.DRINK;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class TrumpetItem extends Item {
     }
 
     @Override
-    public SoundEvent getDrinkSound() {
+    public SoundEvent getDrinkingSound() {
         return null;
     }
 
@@ -65,19 +69,19 @@ public class TrumpetItem extends Item {
         super.onUsingTick(stack, player, count);
 
         int useTime = getUseDuration(stack) - count;
-
+                
         if (useTime == 10) {
-            player.playSound(SoundEvents.TRUMPET_DOOT.get(), 1, 0.9F + player.world.rand.nextFloat() * 0.2F);
-            TrumpetItem.scare(player.world, player);
-            stack.damageItem(1, player, (entity) -> entity.sendBreakAnimation(entity.getActiveHand()));
+            player.playSound(SoundEvents.TRUMPET_DOOT.get(), 1, 0.9F + player.level.random.nextFloat() * 0.2F);
+            TrumpetItem.scare(player.level, player);
+            stack.hurtAndBreak(1, player, (entity) -> entity.broadcastBreakEvent(entity.getUsedItemHand()));
         } else if (useTime >= 15) {
-            player.stopActiveHand();
+            player.stopUsingItem();
         }
     }
-
+//FoodOnAStickItem
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        playerIn.setActiveHand(handIn);
-        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
+    	pPlayer.startUsingItem(pHand);
+        return InteractionResultHolder.success(pPlayer.getItemInHand(pHand));
     }
 }
